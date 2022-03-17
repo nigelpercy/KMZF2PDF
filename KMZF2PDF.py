@@ -93,7 +93,8 @@ frombytes = bytes([
 ])
 
 columnSpacing = 3.10
-rowSpacing = 4
+rowSpacing = 4 
+lineWrapIndent = 12.3
 startRow = 5
 startCol = 5
 maximumRows = 290 ## Seems to be OK for A4
@@ -122,14 +123,14 @@ def PrintCharacter(character,p_colNumber,p_rowNumber):
 
 #file_handler = open(sys.argv[0], 'rb')
 #file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\THE JAM.mzf', 'rb')
-file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\RHINO.mzf', 'rb')
+#file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\RHINO.mzf', 'rb')
 #file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\MONEY TABLE.mzf', 'rb')
 #file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\MAZE.mzf', 'rb')
 #file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\MICE.mzf', 'rb')
 #file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\MAN MAZE.mzf', 'rb')
 #file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\LUDO.mzf', 'rb')
 #file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\HORSE RACE.mzf', 'rb')
-#file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\ANAGRAM.mzf', 'rb')
+file_handler = open('C:\\Install\\SharpMZ-80K\\Library\\ExportedMZF\\ANAGRAM.mzf', 'rb')
 #file_handler = open('C:\\Users\\Nigel\\Downloads\\OTHELLO-BACK UP.mzf', 'rb')
 
 pdf = FPDF()
@@ -381,6 +382,11 @@ while dataByte:
       PrintKeyWord('LN(',colNumber,rowNumber) 
     else:
       PrintCharacter(dataByte,colNumber,rowNumber)
+    # Handle line wrap
+    if colNumber >= 195:
+      colNumber = startCol + lineWrapIndent
+      rowNumber = rowNumber + rowSpacing
+  
 
   colNumber = startCol
   rowNumber = rowNumber + rowSpacing

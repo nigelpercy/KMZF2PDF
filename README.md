@@ -10,3 +10,7 @@ pip install Pillow
 fpdf2 2.5.1
 pip install fpdf2
 
+Overview
+
+I have used the image from MZ-80K CG-ROM (Character Generator) to create 8x8 bitmaps of the characters these are then used
+by a routine which reads the MZF file and then outputs each character as a image onto a PDF page.

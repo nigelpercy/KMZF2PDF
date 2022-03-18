@@ -1,7 +1,7 @@
 # KMZF2PDF
 
 This is a first attempt at a python script which will enable the creation of the program listing in PDF format from a Sharp MZ-80K MZF file.
-The mzf file needs to be a basic program and probably SP-5025 Basic. I may look at further enhancing it to include other versions.
+The mzf file needs to be a basic program and use SP-5025 Basic. I may look at further enhancing it to include other versions.
 
 Dependencies
 

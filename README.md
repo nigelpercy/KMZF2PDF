@@ -15,3 +15,6 @@ Overview
 
 I have used the image from MZ-80K CG-ROM (Character Generator) to create 8x8 bitmaps of the characters these are then used
 by a routine which reads the MZF file and then outputs each character as an image onto a PDF page.
+
+Usage:-
+KMZF2PDF.py Filename.mzf

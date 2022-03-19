@@ -219,11 +219,10 @@ if os.path.exists(fileName):
   PrintKeyWord('*** END OF LISTING ***',colNumber + 60,rowNumber)
   # Save and open PDF
   pdfFileName = os.path.splitext(fileName)[0] + '.pdf'
-  print (pdfFileName)
   pdf.output(pdfFileName)
   os.startfile(pdfFileName)
 
-if len(sys.argv) < 2:
+elif len(sys.argv) < 2:
   print('Usage:- KMZF2PDF filename.mzf')
 else:
   print(fileName + ' cannot be found. Please check path & name.')

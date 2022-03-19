@@ -1,3 +1,4 @@
+   
 # KMZF2PDF - Python Script to convert Sharp MZ-80K MZF files (BASIC SP5025) into PDFs
 #
 # https://github.com/nigelpercy/KMZF2PDF
@@ -14,10 +15,10 @@ def PrintKeyWord(keyword,pColNumber,pRowNumber):
 
 def PrintCharacter(character,pColNumber,pRowNumber):
   global colNumber
-  singlechar = bytearray(CGROM[(character * 8) + 0:(character * 8) + 8])
+  singleChar = bytearray(CGROM[(character * 8) :(character * 8) + 8])
   for x in range(0, 8):
-    singlechar[x] ^= 0xFF # Invert the bitmap so it is black on white
-  pdf.image(PIL.Image.frombytes('1', (8, 8), bytes(singlechar)),pColNumber,pRowNumber)
+    singleChar[x] ^= 0xFF # Invert the bitmap so it is black on white
+  pdf.image(PIL.Image.frombytes('1', (8, 8), bytes(singleChar)),pColNumber,pRowNumber)
   colNumber = pColNumber + COLUMNSPACING
 
 # Dump of the MZ-80K CG-ROM in ASCII order

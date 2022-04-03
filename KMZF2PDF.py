@@ -108,10 +108,8 @@ CGROM = bytes([
 0x00, 0x00, 0x01, 0x3E, 0x54, 0x14, 0x14, 0x00,
 ])
 
- 
-
 LowerCaseList = {161, 154, 159, 156, 146, 170, 151, 152, 166, 175, 169, 184, 179, 176, 183, 158, 160, 157, 164, 150, 165, 171, 163, 155, 189, 162}
-CursorDict = {17: 10, 18: 11,19: 12,20: 13,21: 14,22: 15}
+CursorDict = {17: 10, 18: 11, 19: 12, 20: 13, 21: 14, 22: 15}
 KeywordDict =  {128: 'REM', 129: 'DATA',130: 'LIST',131: 'RUN',132: 'NEW',133: 'PRINT',134: 'LET',135: 'FOR',136: 'IF',137: 'GOTO',138: 'READ',139: 'GOSUB',
                 140: 'RETURN',141: 'NEXT' ,142: 'STOP' ,143: 'END',144: 'ON',145: 'LOAD',146: 'SAVE',147: 'VERIFY',148: 'POKE',149: 'DIM',150: 'DEF FN',
                 151: 'INPUT',152: 'RESTORE',153: 'CLR',154: 'MUSIC',155: 'TEMPO',156: 'USR(',157: 'WOPEN',158: 'ROPEN',159: 'CLOSE',160: 'BYE',161: 'LIMIT',
@@ -131,7 +129,6 @@ ORIENTATION = 'P'
 PAPERSIZE = 'A4'
 
 fileName = ''
-
 if len(sys.argv) >= 2:
   fileName = sys.argv[1]
 if os.path.exists(fileName):

@@ -1,24 +1,21 @@
-   
 # KMZF2PDF - Python Script to convert Sharp MZ-80K MZF files (BASIC SP5025) into PDFs
 #
 # https://github.com/nigelpercy/KMZF2PDF
- 
+
 import fpdf
 import PIL
+import PIL.ImageOps
 import sys
 import os.path
 
-def PrintKeyWord(keyword,pColNumber,pRowNumber):
-  for x in range(0, len(keyword)):
-    PrintCharacter(ord(keyword[x]),pColNumber,pRowNumber)
+def PrintKeyWord(pkeyword,pColNumber,pRowNumber):
+  for x in range(0, len(pkeyword)):
+    PrintCharacter(ord(pkeyword[x]),pColNumber,pRowNumber)
     pColNumber = colNumber
 
-def PrintCharacter(character,pColNumber,pRowNumber):
+def PrintCharacter(pCharacter,pColNumber,pRowNumber):
   global colNumber
-  singleChar = bytearray(CGROM[(character * 8) :(character * 8) + 8])
-  for x in range(0, 8):
-    singleChar[x] ^= 0xFF # Invert the bitmap so it is black on white
-  pdf.image(PIL.Image.frombytes('1', (8, 8), bytes(singleChar)),pColNumber,pRowNumber)
+  pdf.image(PIL.ImageOps.invert(PIL.Image.frombytes('1', (8, 8), bytes(bytearray( CGROM[(pCharacter * 8) : (pCharacter * 8) + 8]) )).convert('L')),pColNumber,pRowNumber)
   colNumber = pColNumber + COLUMNSPACING
 
 # Dump of the MZ-80K CG-ROM in ASCII order
@@ -113,16 +110,15 @@ CGROM = bytes([
 
  
 
+LowerCaseList = {161, 154, 159, 156, 146, 170, 151, 152, 166, 175, 169, 184, 179, 176, 183, 158, 160, 157, 164, 150, 165, 171, 163, 155, 189, 162}
 CursorDict = {17: 10, 18: 11,19: 12,20: 13,21: 14,22: 15}
-LowerCaseDict = {161: 1, 154: 1, 159: 1, 156: 1, 146: 1, 170: 1, 151: 1, 152: 1, 166: 1, 175: 1, 169: 1, 184: 1, 179: 1, 176: 1, 183: 1, 158: 1, 160: 1, 157: 1, 164: 1, 150: 1,
-                 165: 1, 171: 1, 163: 1, 155: 1, 189: 1, 162: 1}
-MathSymbolDict =  {176: '><', 177: '<>',178: '=<', 179: '<=', 180: '=>',181: '>=',182: '=',183: '>',184: '<',188: '+',189:  '-',190: '*',191: '/',255: 'π',207: '↑'}
-KeywordDict =  {129: 'DATA', 130: 'LIST', 131: 'RUN', 132: 'NEW', 133: 'PRINT',134: 'LET', 135: 'FOR', 136: 'IF', 137: 'GOTO', 138: 'READ', 139: 'GOSUB', 140: 'RETURN',
-                141: 'NEXT', 142: 'STOP', 143: 'END', 144: 'ON', 145: 'LOAD', 146: 'SAVE', 147: 'VERIFY', 148: 'POKE', 149: 'DIM', 150: 'DEF FN', 151: 'INPUT', 152: 'RESTORE',
-                153: 'CLR', 154: 'MUSIC', 155: 'TEMPO',156: 'USR(', 157: 'WOPEN', 158: 'ROPEN', 159: 'CLOSE',160: 'BYE', 161: 'LIMIT', 162: 'CONT', 163: 'SET', 164: 'RESET', 
-                165: 'GET', 166: 'INP#', 167: 'OUT#', 173: 'THEN', 174: 'TO', 175: 'STEP', 192: 'LEFT$(', 193: 'RIGHT$(', 194: 'MID$(', 195: 'LEN(', 195: 'LEN(', 196: 'CHR$(', 
-                197: 'STR$(', 198: 'ASC(', 199: 'VAL(', 200: 'PEEK(', 201: 'TAB(', 202: 'SPC(', 203: 'SIZE', 208: 'RND(', 209: 'SIN(', 210: 'COS(', 211: 'TAN(', 212: 'ATN(', 
-                213: 'EXP(', 214: 'INT(', 215: 'LOG(', 216: 'LN(', 217: 'ABS(', 218: 'SGN(', 219: 'SQR('}
+KeywordDict =  {128: 'REM', 129: 'DATA',130: 'LIST',131: 'RUN',132: 'NEW',133: 'PRINT',134: 'LET',135: 'FOR',136: 'IF',137: 'GOTO',138: 'READ',139: 'GOSUB',
+                140: 'RETURN',141: 'NEXT' ,142: 'STOP' ,143: 'END',144: 'ON',145: 'LOAD',146: 'SAVE',147: 'VERIFY',148: 'POKE',149: 'DIM',150: 'DEF FN',
+                151: 'INPUT',152: 'RESTORE',153: 'CLR',154: 'MUSIC',155: 'TEMPO',156: 'USR(',157: 'WOPEN',158: 'ROPEN',159: 'CLOSE',160: 'BYE',161: 'LIMIT',
+                162: 'CONT',163: 'SET',164: 'RESET',165: 'GET',166: 'INP#',167: 'OUT#',173: 'THEN',174: 'TO',175: 'STEP',176: '><',177: '<>',178: '=<',179: '<=',
+                180: '=>',181: '>=',182: '=',183: '>',184: '<',185: 'AND',186: 'OR',187: 'NOR',188: '+',189:  '-',190: '*',191: '/',192: 'LEFT$(',193: 'RIGHT$(',
+                194: 'MID$(',195: 'LEN(',196: 'CHR$(',197: 'STR$(',198: 'ASC(',199: 'VAL(',200: 'PEEK(',201: 'TAB(',202: 'SPC(',203: 'SIZE',207: '↑',208: 'RND(',
+                209: 'SIN(',210: 'COS(',211: 'TAN(',212: 'ATN(',213: 'EXP(',214: 'INT(',215: 'LOG(',216: 'LN(',217: 'ABS(',218: 'SGN(',219: 'SQR(',255: 'π'}
 
 COLUMNSPACING = 3.10
 ROWSPACING = 4
@@ -131,20 +127,23 @@ STARTROW = 5
 STARTCOL = 5
 MAXIMUMROWS = 290 # Seems to be OK for A4
 MAXROWLENGTH = 195
+ORIENTATION = 'P'
+PAPERSIZE = 'A4'
+
 fileName = ''
 
 if len(sys.argv) >= 2:
-  fileName = sys.argv[1] 
+  fileName = sys.argv[1]
 if os.path.exists(fileName):
   fileHandler = open(fileName, 'rb')
 
   pdf = fpdf.FPDF()
-  pdf.add_page()
+  pdf.add_page(ORIENTATION,PAPERSIZE)
   colNumber = STARTCOL
   rowNumber = STARTROW
   openQuote = 0
-
   programType = fileHandler.read(1).hex()
+
   # Print the program name
   programName = fileHandler.read(17).hex()
   for x in range(0, 17 ,2):
@@ -155,7 +154,7 @@ if os.path.exists(fileName):
 
   rowNumber = rowNumber + ROWSPACING * 2
   colNumber = STARTCOL
-  dataByte = fileHandler.read(110).hex()
+  dataByte = fileHandler.read(110).hex() # Remainder of the bytes in the header
 
   while dataByte:
     numberOfBytes = int(fileHandler.read(1).hex(), base=16) # Length of line
@@ -171,37 +170,26 @@ if os.path.exists(fileName):
       if dataByte == 34 and openQuote == 1:
         openQuote = 0
       elif dataByte == 34 and openQuote == 0:
-        openQuote = 1
-
+       openQuote = 1
       # Replace CR with Space
       if dataByte == 13:
         PrintCharacter(32,colNumber,rowNumber)
-
       # Cursor chars
       elif  openQuote == 1 and dataByte >= 17 and dataByte <= 22:
         PrintCharacter(CursorDict[dataByte],colNumber,rowNumber)
-
-      # Math symbols
-      elif openQuote == 0 and MathSymbolDict.get(dataByte):
-        PrintKeyWord(MathSymbolDict.get(dataByte),colNumber,rowNumber)
-
       # Lowercase Letters
-      elif openQuote == 1 and LowerCaseDict.get(dataByte):
+      elif openQuote == 1 and dataByte in LowerCaseList:
         PrintCharacter(dataByte,colNumber,rowNumber)
-
+      # Must be a string definition, so just print the char
       elif openQuote == 1:
         PrintCharacter(dataByte,colNumber,rowNumber)
-
-      # Special case for REM (Treat REM as a quoted string, ignore keyword byte codes)
-      elif dataByte == 128:
-        PrintKeyWord('REM',colNumber,rowNumber)
-        openQuote = 1
-
+      # BASIC Keyword
       elif KeywordDict.get(dataByte):
-        PrintKeyWord(KeywordDict.get(dataByte),colNumber,rowNumber)    
+        PrintKeyWord(KeywordDict.get(dataByte),colNumber,rowNumber)
+        if dataByte == 128: # Special case for REM (Treat REM as a quoted string)
+          openQuote = 1  
       else:
         PrintCharacter(dataByte,colNumber,rowNumber)
-
       # Handle line wrap
       if colNumber >= MAXROWLENGTH:
         colNumber = STARTCOL + LINEWRAPINDENT
@@ -212,11 +200,12 @@ if os.path.exists(fileName):
     openQuote = 0
 
     if rowNumber >= MAXIMUMROWS:
-      pdf.add_page()
+      pdf.add_page(ORIENTATION,PAPERSIZE)
       rowNumber = STARTROW
 
   rowNumber = rowNumber + ROWSPACING
   PrintKeyWord('*** END OF LISTING ***',colNumber + 60,rowNumber)
+
   # Save and open PDF
   pdfFileName = os.path.splitext(fileName)[0] + '.pdf'
   pdf.output(pdfFileName)
@@ -225,4 +214,4 @@ if os.path.exists(fileName):
 elif len(sys.argv) < 2:
   print('Usage:- KMZF2PDF filename.mzf')
 else:
-  print(fileName + ' cannot be found. Please check path & name.')
+  print(fileName + ' cannot be found. Please check path & name.') 

@@ -15,7 +15,10 @@ def PrintKeyWord(pkeyword,pColNumber,pRowNumber):
 
 def PrintCharacter(pCharacter,pColNumber,pRowNumber):
   global colNumber
-  pdf.image(PIL.ImageOps.invert(PIL.Image.frombytes('1', (8, 8), bytes(bytearray( CGROM[(pCharacter * 8) : (pCharacter * 8) + 8]) )).convert('L')),pColNumber,pRowNumber)
+  try:
+    pdf.image(PIL.ImageOps.invert(PIL.Image.frombytes('1', (8, 8), bytes(bytearray( CGROM[(pCharacter * 8) : (pCharacter * 8) + 8]) )).convert('L')),pColNumber,pRowNumber)
+  except:
+    print("*Invalid Character - " + str(pCharacter))  
   colNumber = pColNumber + COLUMNSPACING
 
 # Dump of the MZ-80K CG-ROM in ASCII order

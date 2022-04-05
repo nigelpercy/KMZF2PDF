@@ -138,7 +138,6 @@ if os.path.exists(fileName):
   pdf.add_page(ORIENTATION,PAPERSIZE)
   colNumber = STARTCOL
   rowNumber = STARTROW
-  openQuote = 0
   programType = fileHandler.read(1).hex()
 
   # Print the program name
@@ -147,7 +146,7 @@ if os.path.exists(fileName):
     hexCode = programName[x:x + 2]
     if hexCode == '0d':
       break
-    PrintCharacter(int(hexCode, 16),colNumber,rowNumber)
+    PrintCharacter(int(hexCode, 16), colNumber, rowNumber)
 
   rowNumber = rowNumber + ROWSPACING * 2
   colNumber = STARTCOL
@@ -158,35 +157,21 @@ if os.path.exists(fileName):
     zeroByte = int(fileHandler.read(1).hex(), base=16)
     if numberOfBytes == 0 and zeroByte == 0: # Double 00 00 bytes == EOF
       break
-    PrintKeyWord(str(int(fileHandler.read(1).hex(), base=16) + (int(fileHandler.read(1).hex(), base=16) * 256)) + ' ',colNumber,rowNumber) # Line number high/low bytes
+    PrintKeyWord(str(int(fileHandler.read(1).hex(), base=16) + (int(fileHandler.read(1).hex(), base=16) * 256)) + ' ', colNumber, rowNumber) # Line number high/low bytes
 
     # Read each byte in the line
     for x in range(0, numberOfBytes - 4):
       dataByte = int(fileHandler.read(1).hex(), base=16)
-      # Check for open/closing quotes
-      if dataByte == 34 and openQuote == 1:
-        openQuote = 0
-      elif dataByte == 34 and openQuote == 0:
-       openQuote = 1
-      # Replace CR with Space
-      if dataByte == 13:
-        PrintCharacter(32,colNumber,rowNumber)
+
       # Cursor chars
-      elif  openQuote == 1 and dataByte >= 17 and dataByte <= 22:
-        PrintCharacter(CursorDict[dataByte],colNumber,rowNumber)
-      # Lowercase Letters
-      elif openQuote == 1 and dataByte in LowerCaseList:
-        PrintCharacter(dataByte,colNumber,rowNumber)
-      # Must be a string definition, so just print the char
-      elif openQuote == 1:
-        PrintCharacter(dataByte,colNumber,rowNumber)
+      if  dataByte >= 17 and dataByte <= 22:
+        PrintCharacter(CursorDict[dataByte], colNumber, rowNumber)
       # BASIC Keyword
       elif KeywordDict.get(dataByte):
-        PrintKeyWord(KeywordDict.get(dataByte),colNumber,rowNumber)
-        if dataByte == 128: # Special case for REM (Treat REM as a quoted string)
-          openQuote = 1  
-      else:
-        PrintCharacter(dataByte,colNumber,rowNumber)
+        PrintKeyWord(KeywordDict.get(dataByte), colNumber, rowNumber)
+      elif dataByte != 13: #Ignore CR
+        PrintCharacter(dataByte, colNumber, rowNumber)
+
       # Handle line wrap
       if colNumber >= MAXROWLENGTH:
         colNumber = STARTCOL + LINEWRAPINDENT
@@ -194,14 +179,13 @@ if os.path.exists(fileName):
 
     colNumber = STARTCOL
     rowNumber = rowNumber + ROWSPACING
-    openQuote = 0
 
     if rowNumber >= MAXIMUMROWS:
       pdf.add_page(ORIENTATION,PAPERSIZE)
       rowNumber = STARTROW
 
   rowNumber = rowNumber + ROWSPACING
-  PrintKeyWord('*** END OF LISTING ***',colNumber + 60,rowNumber)
+  PrintKeyWord('*** END OF LISTING ***', colNumber + 60, rowNumber)
 
   # Save and open PDF
   pdfFileName = os.path.splitext(fileName)[0] + '.pdf'

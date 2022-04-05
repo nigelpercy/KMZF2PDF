@@ -147,20 +147,20 @@ if os.path.exists(fileName):
     if hexCode == '0d':
       break
     PrintCharacter(int(hexCode, 16), colNumber, rowNumber)
-
   rowNumber = rowNumber + ROWSPACING * 2
+
   colNumber = STARTCOL
   dataByte = fileHandler.read(110).hex() # Remainder of the bytes in the header
 
   while dataByte:
     numberOfBytes = int(fileHandler.read(1).hex(), base=16) # Length of line
-    zeroByte = int(fileHandler.read(1).hex(), base=16)
+    zeroByte = int(fileHandler.read(1).hex(), base=16) # Always zero
     if numberOfBytes == 0 and zeroByte == 0: # Double 00 00 bytes == EOF
       break
     PrintKeyWord(str(int(fileHandler.read(1).hex(), base=16) + (int(fileHandler.read(1).hex(), base=16) * 256)) + ' ', colNumber, rowNumber) # Line number high/low bytes
 
     # Read each byte in the line
-    for x in range(0, numberOfBytes - 4):
+    for x in range(0, numberOfBytes - 4): # Length - 4 bytes = 1 x Length + 1 x Zero + 2 x Line Number
       dataByte = int(fileHandler.read(1).hex(), base=16)
 
       # Cursor chars
@@ -195,4 +195,5 @@ if os.path.exists(fileName):
 elif len(sys.argv) < 2:
   print('Usage:- KMZF2PDF filename.mzf')
 else:
-  print(fileName + ' cannot be found. Please check path & name.') 
+  print(fileName + ' cannot be found. Please check path & name.')
+ 

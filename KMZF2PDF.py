@@ -141,11 +141,13 @@ if os.path.exists(fileName):
   programType = fileHandler.read(1).hex()
 
   # Print the program name
+  PrintKeyWord('PROGRAM NAME : ', colNumber, rowNumber)
   programName = fileHandler.read(17).hex()
   for x in range(0, 17 ,2):
     hexCode = programName[x:x + 2]
     if hexCode == '0d':
       break
+
     PrintCharacter(int(hexCode, 16), colNumber, rowNumber)
   rowNumber = rowNumber + ROWSPACING * 2
 
@@ -163,7 +165,7 @@ if os.path.exists(fileName):
     for x in range(0, numberOfBytes - 4): # Length - 4 bytes = 1 x Length + 1 x Zero + 2 x Line Number
       dataByte = int(fileHandler.read(1).hex(), base=16)
       # Check for open/closing quotes
-      if dataByte == 34: 
+      if dataByte == 34:
         openQuote ^= 1
 
       # Cursor chars
@@ -182,12 +184,11 @@ if os.path.exists(fileName):
 
     colNumber = STARTCOL
     rowNumber = rowNumber + ROWSPACING
+    openQuote = 0
 
     if rowNumber >= MAXIMUMROWS:
       pdf.add_page(ORIENTATION,PAPERSIZE)
       rowNumber = STARTROW
-      openQuote = 0
-
 
   rowNumber = rowNumber + ROWSPACING
   PrintKeyWord('*** END OF LISTING ***', colNumber + 60, rowNumber)

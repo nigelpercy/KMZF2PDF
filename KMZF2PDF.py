@@ -15,10 +15,7 @@ def PrintKeyWord(pkeyword,pColNumber,pRowNumber):
 
 def PrintCharacter(pCharacter,pColNumber,pRowNumber):
   global colNumber
-  try:
-    pdf.image(PIL.ImageOps.invert(PIL.Image.frombytes('1', (8, 8), bytes(bytearray( CGROM[(pCharacter * 8) : (pCharacter * 8) + 8]) )).convert('L')),pColNumber,pRowNumber)
-  except:
-    print("*Invalid Character - " + str(pCharacter))  
+  pdf.image(PIL.ImageOps.invert(PIL.Image.frombytes('1', (8, 8), bytes(bytearray( CGROM[(pCharacter * 8) : (pCharacter * 8) + 8]) )).convert('L')),pColNumber,pRowNumber)
   colNumber = pColNumber + COLUMNSPACING
 
 # Dump of the MZ-80K CG-ROM in ASCII order
@@ -130,7 +127,7 @@ MAXIMUMROWS = 290 # Seems to be OK for A4
 MAXROWLENGTH = 195
 ORIENTATION = 'P'
 PAPERSIZE = 'A4'
-
+openQuote = 0
 fileName = ''
 if len(sys.argv) >= 2:
   fileName = sys.argv[1]
@@ -165,12 +162,15 @@ if os.path.exists(fileName):
     # Read each byte in the line
     for x in range(0, numberOfBytes - 4): # Length - 4 bytes = 1 x Length + 1 x Zero + 2 x Line Number
       dataByte = int(fileHandler.read(1).hex(), base=16)
+      # Check for open/closing quotes
+      if dataByte == 34: 
+        openQuote ^= 1
 
       # Cursor chars
       if  dataByte >= 17 and dataByte <= 22:
         PrintCharacter(CursorDict[dataByte], colNumber, rowNumber)
       # BASIC Keyword
-      elif KeywordDict.get(dataByte):
+      elif KeywordDict.get(dataByte) and openQuote == 0:
         PrintKeyWord(KeywordDict.get(dataByte), colNumber, rowNumber)
       elif dataByte != 13: #Ignore CR
         PrintCharacter(dataByte, colNumber, rowNumber)
@@ -186,6 +186,8 @@ if os.path.exists(fileName):
     if rowNumber >= MAXIMUMROWS:
       pdf.add_page(ORIENTATION,PAPERSIZE)
       rowNumber = STARTROW
+      openQuote = 0
+
 
   rowNumber = rowNumber + ROWSPACING
   PrintKeyWord('*** END OF LISTING ***', colNumber + 60, rowNumber)

@@ -8,12 +8,12 @@ import PIL.ImageOps
 import sys
 import os.path
 
-def PrintKeyWord(pkeyword,pColNumber,pRowNumber):
-  for x in range(0, len(pkeyword)):
-    PrintCharacter(ord(pkeyword[x]),pColNumber,pRowNumber)
+def PrintKeyWord(pKeyWord, pColNumber, pRowNumber):
+  for x in range(0, len(pKeyWord)):
+    PrintCharacter(ord(pKeyWord[x]), pColNumber, pRowNumber)
     pColNumber = colNumber
 
-def PrintCharacter(pCharacter,pColNumber,pRowNumber):
+def PrintCharacter(pCharacter, pColNumber, pRowNumber):
   global colNumber
   pdf.image(PIL.ImageOps.invert(PIL.Image.frombytes('1', (8, 8), bytes(bytearray( CGROM[(pCharacter * 8) : (pCharacter * 8) + 8]) )).convert('L')),pColNumber,pRowNumber)
   colNumber = pColNumber + COLUMNSPACING
@@ -128,11 +128,12 @@ MAXROWLENGTH = 195
 ORIENTATION = 'P'
 PAPERSIZE = 'A4'
 openQuote = 0
-fileName = ''
+fileName = ""
+
 if len(sys.argv) >= 2:
   fileName = sys.argv[1]
 if os.path.exists(fileName):
-  fileHandler = open(fileName, 'rb')
+  fileHandler = open(fileName, 'rb') # Read/Binary
 
   pdf = fpdf.FPDF()
   pdf.add_page(ORIENTATION,PAPERSIZE)
@@ -147,27 +148,26 @@ if os.path.exists(fileName):
     hexCode = programName[x:x + 2]
     if hexCode == '0d':
       break
-
     PrintCharacter(int(hexCode, 16), colNumber, rowNumber)
   rowNumber = rowNumber + ROWSPACING * 2
 
-  colNumber = STARTCOL
   dataByte = fileHandler.read(110).hex() # Remainder of the bytes in the header
+  colNumber = STARTCOL
 
+  # Loop through all remaining bytes in the file.
   while dataByte:
     numberOfBytes = int(fileHandler.read(1).hex(), base=16) # Length of line
     zeroByte = int(fileHandler.read(1).hex(), base=16) # Always zero
     if numberOfBytes == 0 and zeroByte == 0: # Double 00 00 bytes == EOF
       break
-    PrintKeyWord(str(int(fileHandler.read(1).hex(), base=16) + (int(fileHandler.read(1).hex(), base=16) * 256)) + ' ', colNumber, rowNumber) # Line number high/low bytes
+    PrintKeyWord(str(int(fileHandler.read(1).hex(), base=16) + (int(fileHandler.read(1).hex(), base=16) * 256)) + ' ', colNumber, rowNumber) # Line number low/high bytes
 
     # Read each byte in the line
-    for x in range(0, numberOfBytes - 4): # Length - 4 bytes = 1 x Length + 1 x Zero + 2 x Line Number
+    for x in range(0, numberOfBytes - 4): # Length - 4 bytes = (1 x Length + 1 x Zero + 2 x Line Number)
       dataByte = int(fileHandler.read(1).hex(), base=16)
       # Check for open/closing quotes
       if dataByte == 34:
         openQuote ^= 1
-
       # Cursor chars
       if  dataByte >= 17 and dataByte <= 22:
         PrintCharacter(CursorDict[dataByte], colNumber, rowNumber)
@@ -177,19 +177,19 @@ if os.path.exists(fileName):
       elif dataByte != 13: #Ignore CR
         PrintCharacter(dataByte, colNumber, rowNumber)
 
-      # Handle line wrap
+      # Line wrap
       if colNumber >= MAXROWLENGTH:
         colNumber = STARTCOL + LINEWRAPINDENT
         rowNumber = rowNumber + ROWSPACING
-
+    # New line
     colNumber = STARTCOL
     rowNumber = rowNumber + ROWSPACING
     openQuote = 0
-
+    # New page
     if rowNumber >= MAXIMUMROWS:
-      pdf.add_page(ORIENTATION,PAPERSIZE)
+      pdf.add_page(ORIENTATION, PAPERSIZE)
       rowNumber = STARTROW
-
+  # EOF
   rowNumber = rowNumber + ROWSPACING
   PrintKeyWord('*** END OF LISTING ***', colNumber + 60, rowNumber)
 

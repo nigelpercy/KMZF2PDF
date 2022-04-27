@@ -144,7 +144,7 @@ if os.path.exists(fileName):
   # Print the program name
   PrintKeyWord('PROGRAM NAME : ', colNumber, rowNumber)
   programName = fileHandler.read(17).hex()
-  for x in range(0, 17 ,2):
+  for x in range(0, 34 ,2):
     hexCode = programName[x:x + 2]
     if hexCode == '0d':
       break
